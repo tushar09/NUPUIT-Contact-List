@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.bumptech.glide.Glide;
 import com.nupuit.nupuitcontactlist.R;
 import com.nupuit.nupuitcontactlist.databinding.RowContactListBinding;
 import com.nupuit.nupuitcontactlist.db.Contacts;
@@ -58,6 +59,7 @@ public class MainAdapter extends BaseAdapter{
 
         holder.binding.tvName.setText(contacts.get(position).getName());
         holder.binding.tvNumber.setText(contacts.get(position).getNumber());
+        Glide.with(context).load(contacts.get(position).getUri()).error(R.drawable.ic_person_gray_24dp).into(holder.binding.ivImage);
 
         return convertView;
     }
