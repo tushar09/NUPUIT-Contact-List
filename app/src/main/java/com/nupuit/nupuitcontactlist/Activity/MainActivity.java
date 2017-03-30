@@ -76,4 +76,11 @@ public class MainActivity extends AppCompatActivity{
 
         }
     }
+
+    /**
+     * get all contacts from local database and add it into arraylist
+     */
+    private void getContacts(){
+        
+    }
 }

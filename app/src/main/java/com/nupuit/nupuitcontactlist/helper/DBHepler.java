@@ -8,6 +8,8 @@ import com.nupuit.nupuitcontactlist.db.ContactsDao;
 import com.nupuit.nupuitcontactlist.db.DaoMaster;
 import com.nupuit.nupuitcontactlist.db.DaoSession;
 
+import java.util.List;
+
 /**
  * Created by Tushar on 3/31/2017.
  */
@@ -51,5 +53,13 @@ public class DBHepler{
     public Contacts getContact(String id) {
         Contacts c = contactsDao.queryBuilder().where(ContactsDao.Properties.Contact_id.eq(id)).unique();
         return c;
+    }
+
+    /**
+     * get all the contacts from local database
+     * @return list of the contacts
+     */
+    public List<Contacts> getContactsAsList(){
+        return contactsDao.queryBuilder().list();
     }
 }
