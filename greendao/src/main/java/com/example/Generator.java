@@ -7,7 +7,7 @@ import org.greenrobot.greendao.generator.Schema;
 public class Generator{
 
     private static final String PROJECT_DIR = System.getProperty("user.dir");
-    private static final int DB_VERSION = 0;
+    private static final int DB_VERSION = 2;
     private static final String DEFAULT_PACKAGE = "com.nupuit.nupuitcontactlist.db";
 
     public static void main(String [] args){
