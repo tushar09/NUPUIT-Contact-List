@@ -101,6 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp">
             <Button
+                android:id="@+id/bt_load_more"
                 android:textSize="@dimen/_15sdp"
                 android:textStyle="bold"
                 android:textColor="@android:color/holo_green_dark"
