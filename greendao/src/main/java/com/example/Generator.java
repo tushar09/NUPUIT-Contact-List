@@ -31,6 +31,7 @@ public class Generator{
     private static Entity addContact(Schema schema){
         Entity contacts = schema.addEntity("Contacts");
         contacts.addLongProperty("id").primaryKey().autoincrement();
+        contacts.addStringProperty("contact_id");
         contacts.addStringProperty("name");
         contacts.addStringProperty("number");
         contacts.addStringProperty("uri");
