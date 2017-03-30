@@ -38,4 +38,7 @@ dependencies {
     //Scale view
     compile 'com.intuit.sdp:sdp-android:1.0.3'
 
+    //orm
+    compile 'org.greenrobot:greendao:3.1.1'
+
 }

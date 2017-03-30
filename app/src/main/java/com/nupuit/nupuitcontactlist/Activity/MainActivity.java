@@ -1,8 +1,11 @@
 package com.nupuit.nupuitcontactlist.Activity;
 
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.tool.DataBinder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,25 +31,32 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    private void getContactsDetails(){
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        Cursor phones = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
+                null, null);
+        while(phones.moveToNext()){
+            String Name = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String Number = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.action_settings){
-            return true;
+            String image_uri = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+
+            System.out.println("Contact1 : " + Name + ", Number " + Number
+                    + ", image_uri " + image_uri);
+
+
+            if(image_uri != null){
+                //image.setImageURI(Uri.parse(image_uri));
+            }
+
+
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }
