@@ -56,10 +56,10 @@ public class DBHepler{
     }
 
     /**
-     * get all the contacts from local database
+     * get all the contacts from local database sorted by ASC
      * @return list of the contacts
      */
     public List<Contacts> getContactsAsList(){
-        return contactsDao.queryBuilder().list();
+        return contactsDao.queryBuilder().orderAsc(ContactsDao.Properties.Name).list();
     }
 }
