@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nupuit.nupuitcontactlist.R;
+import com.nupuit.nupuitcontactlist.adapter.MainAdapter;
 import com.nupuit.nupuitcontactlist.databinding.ActivityMainBinding;
 import com.nupuit.nupuitcontactlist.db.Contacts;
 import com.nupuit.nupuitcontactlist.helper.DBHepler;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity{
         dbHepler = new DBHepler(this);
 
         readContactsAndStore();
+
+        loadListView(0, 1000);
 
     }
 
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity{
                     break;
                 }
             }
+            binding.contentMain.lvContactList.setAdapter(new MainAdapter(contactsLn, this));
         }else {
             getContacts();
             loadListView(start, range);

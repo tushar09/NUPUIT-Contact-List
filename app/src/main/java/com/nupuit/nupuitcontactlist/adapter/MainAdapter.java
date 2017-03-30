@@ -12,6 +12,7 @@ import com.nupuit.nupuitcontactlist.databinding.RowContactListBinding;
 import com.nupuit.nupuitcontactlist.db.Contacts;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tushar on 3/31/2017.
@@ -19,10 +20,10 @@ import java.util.ArrayList;
 
 public class MainAdapter extends BaseAdapter{
 
-    private ArrayList<Contacts> contacts;
+    private List<Contacts> contacts;
     private Context context;
 
-    public MainAdapter(ArrayList<Contacts> contacts, Context context){
+    public MainAdapter(List<Contacts> contacts, Context context){
         this.contacts = contacts;
         this.context = context;
     }

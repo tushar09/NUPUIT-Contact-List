@@ -84,6 +84,7 @@
 
         </LinearLayout>
         <LinearLayout
+            android:background="#DDDDDD"
             android:layout_weight="4"
             android:layout_width="match_parent"
             android:layout_height="0dp">
@@ -95,11 +96,18 @@
             </ListView>
         </LinearLayout>
         <LinearLayout
-            android:background="#ff0000"
+            android:gravity="center"
             android:layout_weight=".8"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="0dp">
+            <Button
+                android:textSize="@dimen/_15sdp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_green_dark"
+                android:text="LOAD MORE"
+                android:background="@android:color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 
