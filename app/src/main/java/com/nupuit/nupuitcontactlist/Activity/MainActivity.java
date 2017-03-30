@@ -17,15 +17,21 @@ import android.view.MenuItem;
 
 import com.nupuit.nupuitcontactlist.R;
 import com.nupuit.nupuitcontactlist.databinding.ActivityMainBinding;
+import com.nupuit.nupuitcontactlist.db.Contacts;
+import com.nupuit.nupuitcontactlist.helper.DBHepler;
 
 public class MainActivity extends AppCompatActivity{
 
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
+
+    private DBHepler dbHepler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        dbHepler = new DBHepler(this);
 
         readContactsAndStore();
 
@@ -40,10 +46,10 @@ public class MainActivity extends AppCompatActivity{
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
                 null, null);
         while(phones.moveToNext()){
-            String Name = phones
+            String name = phones
                     .getString(phones
                             .getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String Number = phones
+            String number = phones
                     .getString(phones
                             .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
@@ -55,14 +61,18 @@ public class MainActivity extends AppCompatActivity{
                     .getString(phones
                             .getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
 
-            Log.e("contacts", "Contact1 : " + Name + ", Number " + Number
+            Log.e("contacts", "Contact1 : " + name + ", Number " + number
                     + ", image_uri " + image_uri + ", id " + contact_id);
 
+            //init contacts
+            Contacts c = new Contacts();
+            c.setName(name);
+            c.setNumber(number);
+            c.setContact_id(contact_id);
+            c.setUri(image_uri);
 
-            if(image_uri != null){
-                //image.setImageURI(Uri.parse(image_uri));
-            }
-
+            //insert contacts in dataabse
+            dbHepler.insertContact(c);
 
         }
     }
