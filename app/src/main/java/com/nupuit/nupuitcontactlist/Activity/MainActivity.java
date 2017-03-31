@@ -2,22 +2,18 @@ package com.nupuit.nupuitcontactlist.Activity;
 
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
-import android.databinding.tool.DataBinder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.nupuit.nupuitcontactlist.R;
 import com.nupuit.nupuitcontactlist.adapter.MainAdapter;
 import com.nupuit.nupuitcontactlist.databinding.ActivityMainBinding;
+import com.nupuit.nupuitcontactlist.databinding.FooterViewBinding;
 import com.nupuit.nupuitcontactlist.db.Contacts;
 import com.nupuit.nupuitcontactlist.helper.DBHepler;
 
@@ -27,9 +23,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
 
     private int LOAD_AMOUNT = 10;
-    private int loadCount = 1;
+    private int loadCount = 0;
 
     private ActivityMainBinding binding;
+    private FooterViewBinding bindingFooter;
+
+    private MainAdapter mainAdapter;
 
     private DBHepler dbHepler;
 
@@ -43,11 +42,31 @@ public class MainActivity extends AppCompatActivity{
 
         contactsLn = new ArrayList<>();
 
+        mainAdapter = new MainAdapter(contactsLn, this);
+
         dbHepler = new DBHepler(this);
 
         readContactsAndStore();
 
-        loadListView(0, 1000);
+        bindingFooter = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.footer_view, null, true);
+        bindingFooter.btLoadMore.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(bindingFooter.btLoadMore.getText().toString().equalsIgnoreCase("No more results to show")){
+                    Toast.makeText(MainActivity.this, "No more results to show", Toast.LENGTH_SHORT).show();
+                }else {
+                    loadCount++;
+                    int start = (loadCount * LOAD_AMOUNT) + 1;
+                    int range = start + LOAD_AMOUNT;
+                    updateList(start, range);
+                }
+
+            }
+        });
+
+        binding.contentMain.lvContactList.addFooterView(bindingFooter.getRoot());
+
+        loadListView(0, LOAD_AMOUNT);
 
     }
 
@@ -113,12 +132,34 @@ public class MainActivity extends AppCompatActivity{
                     break;
                 }
             }
-            binding.contentMain.lvContactList.setAdapter(new MainAdapter(contactsLn, this));
+            binding.contentMain.lvContactList.setAdapter(mainAdapter);
+            if(contactsLn.size() == contacts.size()){
+                bindingFooter.btLoadMore.setText("No more results to show");
+            }
         }else {
             getContacts();
             loadListView(start, range);
         }
 
+    }
 
+    /**
+     * load more item to the listview of contacts list
+     * @param start starting index
+     * @param range ending index
+     */
+    private void updateList(int start, int range){
+        for(int i = start; i < range; i++){
+            if(i < contacts.size()){
+                contactsLn.add(contacts.get(i));
+            }else {
+                bindingFooter.btLoadMore.setText("No more results to show");
+                break;
+            }
+        }
+        mainAdapter.notifyDataSetChanged();
+        if(contactsLn.size() == contacts.size() || contactsLn.size() >= contacts.size()){
+            bindingFooter.btLoadMore.setText("No more results to show");
+        }
     }
 }
