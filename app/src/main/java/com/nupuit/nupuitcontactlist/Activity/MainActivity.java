@@ -1,54 +1,165 @@
 package com.nupuit.nupuitcontactlist.Activity;
 
+import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.nupuit.nupuitcontactlist.R;
+import com.nupuit.nupuitcontactlist.adapter.MainAdapter;
+import com.nupuit.nupuitcontactlist.databinding.ActivityMainBinding;
+import com.nupuit.nupuitcontactlist.databinding.FooterViewBinding;
+import com.nupuit.nupuitcontactlist.db.Contacts;
+import com.nupuit.nupuitcontactlist.helper.DBHepler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
+
+    private int LOAD_AMOUNT = 10;
+    private int loadCount = 0;
+
+    private ActivityMainBinding binding;
+    private FooterViewBinding bindingFooter;
+
+    private MainAdapter mainAdapter;
+
+    private DBHepler dbHepler;
+
+    private List<Contacts> contacts;
+    private List<Contacts> contactsLn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener(){
+        contactsLn = new ArrayList<>();
+
+        mainAdapter = new MainAdapter(contactsLn, this);
+
+        dbHepler = new DBHepler(this);
+
+        readContactsAndStore();
+
+        bindingFooter = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.footer_view, null, true);
+        bindingFooter.btLoadMore.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view){
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v){
+                if(bindingFooter.btLoadMore.getText().toString().equalsIgnoreCase("No more results to show")){
+                    Toast.makeText(MainActivity.this, "No more results to show", Toast.LENGTH_SHORT).show();
+                }else {
+                    loadCount++;
+                    int start = (loadCount * LOAD_AMOUNT) + 1;
+                    int range = start + LOAD_AMOUNT;
+                    updateList(start, range);
+                }
+
             }
         });
+
+        binding.contentMain.lvContactList.addFooterView(bindingFooter.getRoot());
+
+        loadListView(0, LOAD_AMOUNT);
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    /**
+     * Read contacts from phone and store in local database
+     */
+    private void readContactsAndStore(){
+
+        Cursor phones = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
+                null, null);
+        while(phones.moveToNext()){
+            String name = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String number = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+            String image_uri = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+
+            String contact_id = phones
+                    .getString(phones
+                            .getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+
+            Log.e("contacts", "Contact1 : " + name + ", Number " + number
+                    + ", image_uri " + image_uri + ", id " + contact_id);
+
+            //init contacts
+            Contacts c = new Contacts();
+            c.setName(name);
+            c.setNumber(number);
+            c.setContact_id(contact_id);
+            c.setUri(image_uri);
+
+            //insert contacts in dataabse
+            dbHepler.insertContact(c);
+
+        }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    /**
+     * get all contacts from local database and add it into list
+     */
+    private void getContacts(){
+        contacts = dbHepler.getContactsAsList();
+    }
 
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.action_settings){
-            return true;
+    /**
+     * load the listview of contacts list
+     * @param start starting index
+     * @param range ending index
+     */
+    private void loadListView(int start, int range){
+
+        if(contacts != null){
+            for(int i = start; i < range; i++){
+                if(i < contacts.size()){
+                    contactsLn.add(contacts.get(i));
+                }else {
+                    break;
+                }
+            }
+            binding.contentMain.lvContactList.setAdapter(mainAdapter);
+            if(contactsLn.size() == contacts.size()){
+                bindingFooter.btLoadMore.setText("No more results to show");
+            }
+        }else {
+            getContacts();
+            loadListView(start, range);
         }
 
-        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * load more item to the listview of contacts list
+     * @param start starting index
+     * @param range ending index
+     */
+    private void updateList(int start, int range){
+        for(int i = start; i < range; i++){
+            if(i < contacts.size()){
+                contactsLn.add(contacts.get(i));
+            }else {
+                bindingFooter.btLoadMore.setText("No more results to show");
+                break;
+            }
+        }
+        mainAdapter.notifyDataSetChanged();
+        if(contactsLn.size() == contacts.size() || contactsLn.size() >= contacts.size()){
+            bindingFooter.btLoadMore.setText("No more results to show");
+        }
     }
 }

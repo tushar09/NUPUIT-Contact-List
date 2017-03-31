@@ -23,6 +23,10 @@ android {
     }
 }
 
+repositories {
+    mavenCentral() // jcenter() works as well because it pulls from Maven Central
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -37,5 +41,11 @@ dependencies {
 
     //Scale view
     compile 'com.intuit.sdp:sdp-android:1.0.3'
+
+    //orm
+    compile 'org.greenrobot:greendao:3.1.1'
+
+    //Image Loader
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 
 }
