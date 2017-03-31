@@ -1,9 +1,13 @@
 package com.nupuit.nupuitcontactlist.Activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,8 +50,6 @@ public class MainActivity extends AppCompatActivity{
 
         dbHepler = new DBHepler(this);
 
-        readContactsAndStore();
-
         bindingFooter = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.footer_view, null, true);
         bindingFooter.btLoadMore.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -66,8 +68,34 @@ public class MainActivity extends AppCompatActivity{
 
         binding.contentMain.lvContactList.addFooterView(bindingFooter.getRoot());
 
-        loadListView(0, LOAD_AMOUNT);
+        haveReadContactPermission();
 
+    }
+
+    /**
+     * check if this app has the permission to access the contacts or not.
+     * @return boolean
+     */
+    public boolean haveReadContactPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_CONTACTS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.e("Permission error","You have permission");
+                readContactsAndStore();
+                loadListView(0, LOAD_AMOUNT);
+                return true;
+            } else {
+                Log.e("Permission error","You have asked for permission");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
+                return false;
+            }
+        }
+        else { //you dont need to worry about these stuff below api level 23
+            Log.e("Permission error","You already have the permission");
+            readContactsAndStore();
+            loadListView(0, LOAD_AMOUNT);
+            return true;
+        }
     }
 
     /**
@@ -160,6 +188,16 @@ public class MainActivity extends AppCompatActivity{
         mainAdapter.notifyDataSetChanged();
         if(contactsLn.size() == contacts.size() || contactsLn.size() >= contacts.size()){
             bindingFooter.btLoadMore.setText("No more results to show");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            //you have the permission now.
+            readContactsAndStore();
+            loadListView(0, LOAD_AMOUNT);
         }
     }
 }
