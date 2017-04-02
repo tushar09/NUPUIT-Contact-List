@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NUPUITContactList.iml" filepath="$PROJECT_DIR$/NUPUITContactList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NUPUIT-Contact-List.iml" filepath="$PROJECT_DIR$/NUPUIT-Contact-List.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/greendao/greendao.iml" filepath="$PROJECT_DIR$/greendao/greendao.iml" />
     </modules>

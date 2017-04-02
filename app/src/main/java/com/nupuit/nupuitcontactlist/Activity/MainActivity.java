@@ -10,9 +10,6 @@ import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Toast;
 
 import com.nupuit.nupuitcontactlist.R;
 import com.nupuit.nupuitcontactlist.adapter.MainAdapter;
@@ -50,25 +47,26 @@ public class MainActivity extends AppCompatActivity{
 
         dbHepler = new DBHepler(this);
 
-        bindingFooter = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.footer_view, null, true);
-        bindingFooter.btLoadMore.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                if(bindingFooter.btLoadMore.getText().toString().equalsIgnoreCase("No more results to show")){
-                    Toast.makeText(MainActivity.this, "No more results to show", Toast.LENGTH_SHORT).show();
-                }else {
-                    loadCount++;
-                    int start = (loadCount * LOAD_AMOUNT) + 1;
-                    int range = start + LOAD_AMOUNT;
-                    updateList(start, range);
-                }
-
-            }
-        });
-
-        binding.contentMain.lvContactList.addFooterView(bindingFooter.getRoot());
+//        bindingFooter = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.footer_view, null, true);
+//        bindingFooter.btLoadMore.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v){
+//                if(bindingFooter.btLoadMore.getText().toString().equalsIgnoreCase("No more results to show")){
+//                    Toast.makeText(MainActivity.this, "No more results to show", Toast.LENGTH_SHORT).show();
+//                }else {
+//                    loadCount++;
+//                    int start = (loadCount * LOAD_AMOUNT) + 1;
+//                    int range = start + LOAD_AMOUNT;
+//                    updateList(0, contacts.size());
+//                }
+//
+//            }
+//        });
+//
+//        binding.contentMain.lvContactList.addFooterView(bindingFooter.getRoot());
 
         haveReadContactPermission();
+        updateList(0, contacts.size());
 
     }
 
@@ -186,9 +184,7 @@ public class MainActivity extends AppCompatActivity{
             }
         }
         mainAdapter.notifyDataSetChanged();
-        if(contactsLn.size() == contacts.size() || contactsLn.size() >= contacts.size()){
-            bindingFooter.btLoadMore.setText("No more results to show");
-        }
+
     }
 
     @Override
